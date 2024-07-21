@@ -4,6 +4,8 @@ import { IReview } from "../models/Review-model";
 import { ILike } from "../models/Like-model";
 import Like from "../models/Like-model";
 import { Types } from "mongoose";
+import Business from "../models/Business-model";
+import { IBusiness } from "../models/Business-model";
 
 interface RequestWithUserId extends Request {
   userId?: string | null;
@@ -28,9 +30,17 @@ async function addReview(req: RequestWithUserId, res: Response) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
+  const businessToFind = await Business.findById(reviewToAdd.business);
+  if (!businessToFind) {
+    res.status(404).json({ message: "Business not found" });
+    return;
+  }
+
   try {
     const newReview = new Review({ ...reviewToAdd, user: userId });
     const savedReview = await newReview.save();
+    businessToFind.stars.push(reviewToAdd.stars as number);
+    await businessToFind.save();
     res.status(201).json(savedReview);
   } catch (err: any) {
     console.error("Error while creating review", err);
@@ -48,10 +58,7 @@ async function deleteReview(req: RequestWithUserId, res: Response) {
   const userId = req.userId;
 
   try {
-    const reviewToDelete = await Review.findOneAndDelete({
-      _id: id,
-      user: userId,
-    });
+    const reviewToDelete = await Review.findOne({ _id: id });
     if (!reviewToDelete) {
       return res.status(404).json({ message: "review not found" });
     }
@@ -61,6 +68,19 @@ async function deleteReview(req: RequestWithUserId, res: Response) {
         .status(403)
         .json({ message: "You do not have permission to delete this review" });
     }
+
+    const businessToFind = await Business.findById(reviewToDelete.business);
+    if (!businessToFind) {
+      res.status(404).json({ message: "Business not found" });
+      return;
+    }
+
+    const starIndex = businessToFind.stars.indexOf(reviewToDelete.stars);
+    if (starIndex !== -1) {
+      businessToFind.stars.splice(starIndex, 1);
+    }
+    await businessToFind.save();
+    await reviewToDelete.deleteOne();
 
     res.json({ message: "review deleted" });
   } catch (err: any) {
