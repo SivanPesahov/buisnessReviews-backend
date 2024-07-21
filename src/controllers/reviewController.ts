@@ -58,10 +58,7 @@ async function deleteReview(req: RequestWithUserId, res: Response) {
   const userId = req.userId;
 
   try {
-    const reviewToDelete = await Review.findOneAndDelete({
-      _id: id,
-      user: userId,
-    });
+    const reviewToDelete = await Review.findOne({ _id: id });
     if (!reviewToDelete) {
       return res.status(404).json({ message: "review not found" });
     }
@@ -71,6 +68,19 @@ async function deleteReview(req: RequestWithUserId, res: Response) {
         .status(403)
         .json({ message: "You do not have permission to delete this review" });
     }
+
+    const businessToFind = await Business.findById(reviewToDelete.business);
+    if (!businessToFind) {
+      res.status(404).json({ message: "Business not found" });
+      return;
+    }
+
+    const starIndex = businessToFind.stars.indexOf(reviewToDelete.stars);
+    if (starIndex !== -1) {
+      businessToFind.stars.splice(starIndex, 1);
+    }
+    await businessToFind.save();
+    await reviewToDelete.deleteOne();
 
     res.json({ message: "review deleted" });
   } catch (err: any) {
