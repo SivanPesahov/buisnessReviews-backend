@@ -4,6 +4,8 @@ import { IReview } from "../models/Review-model";
 import { ILike } from "../models/Like-model";
 import Like from "../models/Like-model";
 import { Types } from "mongoose";
+import Business from "../models/Business-model";
+import { IBusiness } from "../models/Business-model";
 
 interface RequestWithUserId extends Request {
   userId?: string | null;
@@ -28,9 +30,17 @@ async function addReview(req: RequestWithUserId, res: Response) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
+  const businessToFind = await Business.findById(reviewToAdd.business);
+  if (!businessToFind) {
+    res.status(404).json({ message: "Business not found" });
+    return;
+  }
+
   try {
     const newReview = new Review({ ...reviewToAdd, user: userId });
     const savedReview = await newReview.save();
+    businessToFind.stars.push(reviewToAdd.stars as number);
+    await businessToFind.save();
     res.status(201).json(savedReview);
   } catch (err: any) {
     console.error("Error while creating review", err);
