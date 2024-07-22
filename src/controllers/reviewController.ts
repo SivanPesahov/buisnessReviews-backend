@@ -99,11 +99,8 @@ async function editReview(req: RequestWithUserId, res: Response) {
   const { content, stars } = req.body;
 
   try {
-    const updatedReview = await Review.findOneAndUpdate(
-      { _id: id, user: userId },
-      { content, stars },
-      { new: true, runValidators: true }
-    );
+    const updatedReview = await Review.findOne({ _id: id, user: userId });
+
     if (!updatedReview) {
       console.log(
         `review.controller, updateReview. review not found with id: ${id}`
@@ -117,7 +114,26 @@ async function editReview(req: RequestWithUserId, res: Response) {
         .json({ message: "You do not have permission to delete this review" });
     }
 
-    res.json(updatedReview);
+    const businessToUpdate = await Business.findById(updatedReview.business);
+    if (!businessToUpdate) {
+      res.status(404).json({ message: "Business not found" });
+      return;
+    }
+
+    const index = businessToUpdate.stars.indexOf(updatedReview.stars);
+    if (index !== -1) {
+      businessToUpdate.stars[index] = stars;
+    } else {
+      businessToUpdate.stars.push(stars);
+    }
+
+    await businessToUpdate.save();
+
+    updatedReview.content = content;
+    updatedReview.stars = stars;
+    const review = await updatedReview.save();
+
+    res.json(review);
   } catch (err: any) {
     console.log(
       `review.controller, updateReview. Error while updating review with id: ${id}`,

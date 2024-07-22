@@ -26,6 +26,62 @@ const users = [
     firstName: "Jane",
     lastName: "Doe",
   },
+  {
+    username: "bob_smith",
+    email: "bob@example.com",
+    password: "password789",
+    firstName: "Bob",
+    lastName: "Smith",
+  },
+  {
+    username: "alice_jones",
+    email: "alice@example.com",
+    password: "password101",
+    firstName: "Alice",
+    lastName: "Jones",
+  },
+  {
+    username: "charlie_brown",
+    email: "charlie@example.com",
+    password: "password102",
+    firstName: "Charlie",
+    lastName: "Brown",
+  },
+  {
+    username: "david_lee",
+    email: "david@example.com",
+    password: "password103",
+    firstName: "David",
+    lastName: "Lee",
+  },
+  {
+    username: "emily_clark",
+    email: "emily@example.com",
+    password: "password104",
+    firstName: "Emily",
+    lastName: "Clark",
+  },
+  {
+    username: "frank_wright",
+    email: "frank@example.com",
+    password: "password105",
+    firstName: "Frank",
+    lastName: "Wright",
+  },
+  {
+    username: "grace_hall",
+    email: "grace@example.com",
+    password: "password106",
+    firstName: "Grace",
+    lastName: "Hall",
+  },
+  {
+    username: "henry_adams",
+    email: "henry@example.com",
+    password: "password107",
+    firstName: "Henry",
+    lastName: "Adams",
+  },
 ];
 
 const businesses = [
@@ -38,18 +94,62 @@ const businesses = [
     description:
       "A restaurant chain offering healthy and organic food options.",
   },
+  {
+    name: "Auto Repair Pro",
+    description: "Professional car repair and maintenance services.",
+  },
+  {
+    name: "Book Haven",
+    description: "A cozy bookstore with a wide selection of books.",
+  },
+  {
+    name: "Fitness World",
+    description: "A state-of-the-art gym and fitness center.",
+  },
 ];
 
 const reviews = [
   {
     content: "Great service and friendly staff.",
+    stars: 5,
   },
   {
     content: "The food was delicious and fresh.",
+    stars: 4,
+  },
+  {
+    content: "Quick and reliable service.",
+    stars: 5,
+  },
+  {
+    content: "A fantastic place for book lovers.",
+    stars: 5,
+  },
+  {
+    content: "Excellent facilities and trainers.",
+    stars: 5,
+  },
+  {
+    content: "Amazing experience, highly recommend.",
+    stars: 4,
+  },
+  {
+    content: "Healthy and tasty meals.",
+    stars: 5,
+  },
+  {
+    content: "Very professional and helpful staff.",
+    stars: 4,
+  },
+  {
+    content: "A peaceful place to read.",
+    stars: 5,
+  },
+  {
+    content: "Great equipment and atmosphere.",
+    stars: 4,
   },
 ];
-
-const likes: any[] = [];
 
 async function seedDB() {
   try {
