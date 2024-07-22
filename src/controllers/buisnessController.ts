@@ -10,4 +10,16 @@ async function getBusiness(req: Request, res: Response) {
   }
 }
 
-export default getBusiness;
+async function getBusinessById(req: Request, res: Response) {
+  const { id } = req.params;
+  try {
+    const business = await Business.findById(id);
+    if (!business)
+      return res.status(404).json({ message: "Business not found" });
+    res.status(200).json(business);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+export { getBusiness, getBusinessById };
