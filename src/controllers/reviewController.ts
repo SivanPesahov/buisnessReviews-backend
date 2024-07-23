@@ -6,13 +6,13 @@ import Like from "../models/Like-model";
 import { Types } from "mongoose";
 import Business from "../models/Business-model";
 import { IBusiness } from "../models/Business-model";
-
 interface RequestWithUserId extends Request {
   userId?: string | null;
 }
 
 async function getReviewsByBuisnessId(req: Request, res: Response) {
   const { id } = req.params;
+  
   try {
     const reviews = await Review.find({ business: id });
     res.status(200).json(reviews);
@@ -24,7 +24,6 @@ async function getReviewsByBuisnessId(req: Request, res: Response) {
 async function addReview(req: RequestWithUserId, res: Response) {
   const reviewToAdd: Partial<IReview> = req.body;
   const userId = req.userId;
-  console.log(userId);
 
   if (!userId) {
     return res.status(401).json({ message: "Unauthorized" });
@@ -41,6 +40,7 @@ async function addReview(req: RequestWithUserId, res: Response) {
     const savedReview = await newReview.save();
     businessToFind.stars.push(reviewToAdd.stars as number);
     await businessToFind.save();
+    // io.emit("reviewCreated", newReview);
     res.status(201).json(savedReview);
   } catch (err: any) {
     console.error("Error while creating review", err);
