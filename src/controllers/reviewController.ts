@@ -188,7 +188,7 @@ async function likeReview(
     const like = new Like(newLike);
     await like.save();
 
-    review.likes.push(like._id);
+    review.likes.push(like.user);
     await review.save();
     io.emit("reviewLiked", review);
 
