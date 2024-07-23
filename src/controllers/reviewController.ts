@@ -6,6 +6,7 @@ import Like from "../models/Like-model";
 import { Types } from "mongoose";
 import Business from "../models/Business-model";
 import { IBusiness } from "../models/Business-model";
+import { io } from "..";
 interface RequestWithUserId extends Request {
   userId?: string | null;
 }
@@ -40,7 +41,7 @@ async function addReview(req: RequestWithUserId, res: Response) {
     const savedReview = await newReview.save();
     businessToFind.stars.push(reviewToAdd.stars as number);
     await businessToFind.save();
-    // io.emit("reviewCreated", newReview);
+    io.emit("reviewCreated", savedReview);
     res.status(201).json(savedReview);
   } catch (err: any) {
     console.error("Error while creating review", err);
@@ -81,6 +82,7 @@ async function deleteReview(req: RequestWithUserId, res: Response) {
     }
     await businessToFind.save();
     await reviewToDelete.deleteOne();
+    io.emit("reviewDeleted", id);
 
     res.json({ message: "review deleted" });
   } catch (err: any) {
@@ -132,6 +134,7 @@ async function editReview(req: RequestWithUserId, res: Response) {
     updatedReview.content = content;
     updatedReview.stars = stars;
     const review = await updatedReview.save();
+    io.emit("reviewEdited", review);
 
     res.json(review);
   } catch (err: any) {
@@ -187,6 +190,7 @@ async function likeReview(
 
     review.likes.push(like._id);
     await review.save();
+    io.emit("reviewLiked", review);
 
     res.status(201).json(like);
   } catch (error: any) {
@@ -228,6 +232,7 @@ async function unLikeReview(
 
     await selectedReview.save();
     await Like.deleteOne({ _id: likeToRemove._id });
+    io.emit("reviewUnLiked", selectedReview);
 
     res
       .status(200)
